@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-mode="standalone">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#001f3f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Basta Bullying: Ideias Positivas</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Splash Screen (será escondido após carregamento) -->
+  <div id="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <i class="fas fa-shield-alt"></i>
+        <h1>Basta Bullying</h1>
+      </div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <button id="btn-menu" class="header-btn">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h1>Basta Bullying</h1>
+    <button id="btn-denuncia-header" class="header-btn">
+      <i class="fas fa-flag"></i>
+    </button>
+  </header>
+
+  <!-- Menu Lateral -->
+  <nav id="side-menu" class="side-menu">
+    <div class="menu-header">
+      <h3>Menu</h3>
+      <button id="btn-close-menu" class="menu-btn">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <ul class="menu-items">
+      <li><a href="#hero"><i class="fas fa-home"></i> Início</a></li>
+      <li><a href="#sobre"><i class="fas fa-info-circle"></i> Sobre</a></li>
+      <li><a href="#tipos"><i class="fas fa-list"></i> Tipos de Bullying</a></li>
+      <li><a href="#depoimentos"><i class="fas fa-comments"></i> Depoimentos</a></li>
+      <li><a href="#recursos"><i class="fas fa-book"></i> Recursos</a></li>
+      <li><a href="#contato"><i class="fas fa-envelope"></i> Contato</a></li>
+    </ul>
+    <div class="menu-footer">
+      <button id="btn-dark-mode" class="menu-btn">
+        <i class="fas fa-moon"></i> Modo Escuro
+      </button>
+    </div>
+  </nav>
+
+  <!-- Conteúdo Principal -->
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="hero-content">
+        <h2>Você não está sozinho!</h2>
+        <p>Denunciar é um ato de coragem. Juntos podemos construir um ambiente mais seguro e acolhedor.</p>
+        <button id="btn-mensagem" class="btn-motivacional">
+          <i class="fas fa-comment-dots"></i> Mensagem de Apoio
+        </button>
+        <p id="mensagem-apoio" class="mensagem-apoio"></p>
+      </div>
+    </section>
+
+    <!-- Sobre Section -->
+    <section id="sobre" class="sobre">
+      <div class="section-header">
+        <h2>Por que criamos este app?</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="sobre-content">
+        <div class="sobre-text">
+          <p>O <strong>Basta Bullying</strong> nasceu para oferecer um espaço seguro para denúncias anônimas e apoio emocional.</p>
+          <p>Acreditamos que <strong>todos merecem respeito</strong> e um ambiente livre de intimidações.</p>
+          <p>Nosso objetivo é ser uma <strong>rede de apoio</strong> e educação contra o bullying.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tipos de Bullying Section -->
+    <section id="tipos" class="tipos">
+      <div class="section-header">
+        <h2>Tipos de Bullying</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="cards-container">
+        <!-- Cards serão gerados via JavaScript para melhor performance -->
+      </div>
+    </section>
+
+    <!-- Depoimentos Section -->
+    <section id="depoimentos" class="depoimentos">
+      <div class="section-header">
+        <h2>Você não está sozinho</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="depoimentos-container">
+        <!-- Depoimentos serão gerados via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Recursos Section -->
+    <section id="recursos" class="recursos">
+      <div class="section-header">
+        <h2>Recursos de Apoio</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="recursos-container">
+        <!-- Recursos serão gerados via JavaScript -->
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+      <div class="cta-content">
+        <h3>Pronto para fazer a diferença?</h3>
+        <p>Sua denúncia pode mudar vidas. É anônima, segura e rápida.</p>
+        <div class="cta-buttons">
+          <button id="btn-denuncia" class="btn-denuncia">
+            <i class="fas fa-flag"></i> Fazer Denúncia
+          </button>
+          <button id="btn-info" class="btn-info">
+            <i class="fas fa-question-circle"></i> Como funciona?
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contato Section -->
+    <section id="contato" class="contato">
+      <div class="section-header">
+        <h2>Fale Conosco</h2>
+        <div class="divider"></div>
+      </div>
+      <form id="contato-form" class="contato-form">
+        <div class="form-group">
+          <input type="text" id="nome" placeholder="Seu nome (opcional)">
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Seu e-mail (opcional)">
+        </div>
+        <div class="form-group">
+          <textarea id="mensagem" rows="4" placeholder="Sua mensagem" required></textarea>
+        </div>
+        <button type="submit" class="btn-denuncia">
+          <i class="fas fa-paper-plane"></i> Enviar Mensagem
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <h3>Basta Bullying</h3>
+        <p>Ideias Positivas para um Futuro Melhor</p>
+      </div>
+      <div class="footer-social">
+        <h4>Siga-nos</h4>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Basta Bullying. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Modal de Denúncia -->
+  <div id="denuncia-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Fazer Denúncia</h3>
+      <form id="denuncia-form">
+        <div class="form-group">
+          <label for="tipo-denuncia">Tipo de Bullying</label>
+          <select id="tipo-denuncia" required>
+            <option value="">Selecione...</option>
+            <option value="fisico">Físico</option>
+            <option value="verbal">Verbal</option>
+            <option value="psicologico">Psicológico</option>
+            <option value="cyberbullying">Cyberbullying</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="local-denuncia">Local do Incidente</label>
+          <input type="text" id="local-denuncia" placeholder="Onde aconteceu?" required>
+        </div>
+        <div class="form-group">
+          <label for="descricao-denuncia">Descrição</label>
+          <textarea id="descricao-denuncia" rows="4" placeholder="Descreva o que aconteceu..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="anonimo">
+            <input type="checkbox" id="anonimo" checked> Manter denúncia anônima
+          </label>
+        </div>
+        <button type="submit" class="btn-denuncia">
+          <i class="fas fa-paper-plane"></i> Enviar Denúncia
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Informações -->
+  <div id="info-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Como funciona nossa denúncia</h3>
+      <ol>
+        <li>Você preenche o formulário de denúncia</li>
+        <li>Não pedimos nenhuma informação pessoal</li>
+        <li>Sua denúncia é enviada para as autoridades competentes</li>
+        <li>Você recebe um código para acompanhar o caso</li>
+        <li>Tudo de forma 100% segura e confidencial</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Feedback Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
