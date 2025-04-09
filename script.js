@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Configurações iniciais
-  const APP_VERSION = "1.2.0";
+  // =====================
+  // Configurações Iniciais
+  // =====================
+  const APP_VERSION = "1.0.0";
   console.log(`Basta Bullying v${APP_VERSION}`);
 
   // =============
@@ -12,57 +14,37 @@ document.addEventListener("DOMContentLoaded", () => {
       splashScreen.style.opacity = '0';
       setTimeout(() => {
         splashScreen.style.display = 'none';
+        trackEvent('SplashScreen', 'Hidden');
       }, 500);
     }, 1500);
   }
 
-  // ========================
-  // Mensagens Motivacionais (Corrigido para WebView)
-  // ========================
-  let lastMessageIndex = -1;
-  const mensagens = [
-    "Você é mais forte do que imagina. Acredite em si mesmo!",
-    "Fale, não se cale. Sua voz tem o poder de mudar histórias.",
-    "Estamos com você em cada passo. Você nunca está sozinho.",
-    "A dor pode ser aliviada com um simples gesto de apoio. Conte conosco.",
-    "Você merece respeito. Nunca aceite menos que isso.",
-    "A coragem não é a ausência de medo, mas a decisão de agir apesar dele.",
-    "Sua história não termina aqui. Amanhã será um novo dia.",
-    "Denunciar é proteger a si mesmo e aos outros. Você é importante!",
-    "Ninguém tem o direito de fazer você se sentir pequeno. Você é incrível!",
-    "Juntos somos mais fortes. Vamos acabar com o bullying!"
-  ];
+  // ===================
+  // Verificação WebView
+  // ===================
+  const isWebView = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    return (userAgent.includes('wv') || 
+            userAgent.includes('webview') || 
+            isStandalone ||
+            /(android|iphone|ipad).*version\/[\d.]+.*chrome\/[^\s]+ mobile/i.test(navigator.userAgent));
+  };
 
-  function showRandomMessage() {
-    const msgContainer = document.getElementById('mensagem-apoio-container');
-    const msg = document.getElementById('mensagem-apoio');
+  if (isWebView()) {
+    document.documentElement.setAttribute('data-mode', 'webview');
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', '#4361ee');
+    }
     
-    if (!msgContainer || !msg) return;
-
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * mensagens.length);
-    } while (newIndex === lastMessageIndex && mensagens.length > 1);
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
     
-    lastMessageIndex = newIndex;
-    const mensagem = mensagens[newIndex];
-    
-    // Efeito de transição
-    msg.style.opacity = '0';
-    msgContainer.style.display = 'block';
-    
-    setTimeout(() => {
-      msg.textContent = mensagem;
-      msg.style.opacity = '1';
-    }, 300);
-  }
-
-  // Configurar botão de mensagem
-  const btnMensagem = document.getElementById('btn-mensagem');
-  if (btnMensagem) {
-    btnMensagem.addEventListener('click', showRandomMessage);
-    // Mostrar primeira mensagem ao carregar
-    setTimeout(showRandomMessage, 2000);
+    trackEvent('Platform', 'WebView');
+  } else {
+    trackEvent('Platform', 'Browser');
   }
 
   // ==============
@@ -77,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnMenu.addEventListener('click', () => {
         sideMenu.classList.add('open');
         document.body.style.overflow = 'hidden';
+        trackEvent('Menu', 'Opened');
       });
     }
 
@@ -84,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnCloseMenu.addEventListener('click', () => {
         sideMenu?.classList.remove('open');
         document.body.style.overflow = '';
+        trackEvent('Menu', 'Closed');
       });
     }
 
@@ -91,10 +75,98 @@ document.addEventListener("DOMContentLoaded", () => {
       link.addEventListener('click', () => {
         sideMenu?.classList.remove('open');
         document.body.style.overflow = '';
+        trackEvent('Navigation', link.getAttribute('href'));
       });
     });
   };
   setupMenu();
+
+  // ===========
+  // Dark Mode
+  // ===========
+  const setupDarkMode = () => {
+    const btnDarkMode = document.getElementById('btn-dark-mode');
+    if (!btnDarkMode) return;
+
+    const darkModeIcon = btnDarkMode.querySelector('i');
+    let darkMode = localStorage.getItem('darkMode') === 'enabled';
+
+    const enableDarkMode = () => {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('darkMode', 'enabled');
+      darkModeIcon?.classList.replace('fa-moon', 'fa-sun');
+      btnDarkMode.textContent = ' Modo Claro';
+      if (darkModeIcon) btnDarkMode.prepend(darkModeIcon);
+      trackEvent('Theme', 'Dark');
+    };
+
+    const disableDarkMode = () => {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('darkMode', 'disabled');
+      darkModeIcon?.classList.replace('fa-sun', 'fa-moon');
+      btnDarkMode.textContent = ' Modo Escuro';
+      if (darkModeIcon) btnDarkMode.prepend(darkModeIcon);
+      trackEvent('Theme', 'Light');
+    };
+
+    if (darkMode) enableDarkMode();
+
+    btnDarkMode.addEventListener('click', () => {
+      darkMode = !darkMode;
+      darkMode ? enableDarkMode() : disableDarkMode();
+    });
+  };
+  setupDarkMode();
+
+  // ========================
+  // Mensagens Motivacionais
+  // ========================
+  const setupMotivationalMessages = () => {
+    const btnMensagem = document.getElementById('btn-mensagem');
+    const msg = document.getElementById('mensagem-apoio');
+
+    if (!btnMensagem || !msg) return;
+
+    const mensagens = [
+      { text: "Você é mais forte do que imagina. Acredite em si mesmo!", category: "autoestima" },
+      { text: "Fale, não se cale. Sua voz tem o poder de mudar histórias.", category: "encorajamento" },
+      { text: "Estamos com você em cada passo. Você nunca está sozinho.", category: "apoio" },
+      { text: "A dor pode ser aliviada com um simples gesto de apoio. Conte conosco.", category: "solidariedade" },
+      { text: "Você merece respeito. Nunca aceite menos que isso.", category: "autoestima" },
+      { text: "A coragem não é a ausência de medo, mas a decisão de agir apesar dele.", category: "encorajamento" },
+      { text: "Sua história não termina aqui. Amanhã será um novo dia.", category: "esperança" },
+      { text: "Denunciar é proteger a si mesmo e aos outros. Você é importante!", category: "responsabilidade" },
+      { text: "Ninguém tem o direito de fazer você se sentir pequeno. Você é incrível!", category: "autoestima" },
+      { text: "Juntos somos mais fortes. Vamos acabar com o bullying!", category: "coletividade" }
+    ];
+
+    // Mostrar primeira mensagem aleatória ao carregar
+    const randomIndex = Math.floor(Math.random() * mensagens.length);
+    msg.textContent = mensagens[randomIndex].text;
+
+    const msgContainer = document.getElementById('mensagem-apoio-container');
+    if (msgContainer) msgContainer.style.display = 'block';
+    msg.style.opacity = 1;
+
+    btnMensagem.addEventListener('click', () => {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * mensagens.length);
+      } while (newIndex === randomIndex); // Garante que não repita a mesma mensagem
+
+      const mensagem = mensagens[newIndex];
+      
+      // Efeito de fade out e fade in
+      msg.style.opacity = 0;
+      setTimeout(() => {
+        msg.textContent = mensagem.text;
+        msg.style.opacity = 1;
+      }, 300);
+      
+      trackEvent('MotivationalMessage', mensagem.category);
+    });
+  };
+  setupMotivationalMessages();
 
   // ===================
   // Tipos de Bullying
@@ -150,10 +222,11 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `).join('');
 
+    // Adiciona eventos de clique aos cards
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('click', () => {
         const type = card.getAttribute('data-type');
-        showToast(`Você selecionou: Bullying ${type.charAt(0).toUpperCase() + type.slice(1)}`, 'info');
+        trackEvent('BullyingType', type);
       });
     });
   };
@@ -192,6 +265,8 @@ document.addEventListener("DOMContentLoaded", () => {
           animateValue(stat2, 0, 85, 2000);
           animateValue(stat3, 0, 40, 2000);
           animated = true;
+          window.removeEventListener('scroll', checkStatsVisibility);
+          trackEvent('Stats', 'Viewed');
         }
       }
     };
@@ -260,16 +335,20 @@ document.addEventListener("DOMContentLoaded", () => {
       question.addEventListener('click', () => {
         const item = question.parentElement;
         const wasActive = item.classList.contains('active');
+        const category = item.getAttribute('data-category');
         
+        // Fecha todos os itens primeiro
         document.querySelectorAll('.faq-item').forEach(faqItem => {
           faqItem.classList.remove('active');
           faqItem.querySelector('.faq-answer').style.maxHeight = '0';
         });
         
+        // Abre o item clicado se não estava ativo
         if (!wasActive) {
           item.classList.add('active');
           const answer = item.querySelector('.faq-answer');
           answer.style.maxHeight = answer.scrollHeight + 'px';
+          trackEvent('FAQ', category);
         }
       });
     });
@@ -280,45 +359,45 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modais
   // =========
   const setupModals = () => {
-    const FORM_LINK = "https://forms.example.com/denuncia";
-    
-    // Função para abrir link de denúncia
-    const openForm = () => {
-      window.open(FORM_LINK, '_blank');
-    };
-    
-    // Configurar botões de denúncia
+    // Modal de Denúncia
+    const denunciaModal = document.getElementById('denuncia-modal');
     const btnDenuncia = document.getElementById('btn-denuncia');
     const btnDenunciaHeader = document.getElementById('btn-denuncia-header');
-    
-    if (btnDenuncia) {
-      btnDenuncia.addEventListener('click', openForm);
-    }
-    
-    if (btnDenunciaHeader) {
-      btnDenunciaHeader.addEventListener('click', openForm);
-    }
-    
-    // Configurar outros modais
-    const infoModal = document.getElementById('info-modal');
-    const btnInfo = document.getElementById('btn-info');
-    const sosModal = document.getElementById('sos-modal');
-    const btnSos = document.getElementById('btn-sos');
     const closeModal = document.querySelectorAll('.close-modal');
     
+    // Modal de Informações
+    const infoModal = document.getElementById('info-modal');
+    const btnInfo = document.getElementById('btn-info');
+    
+    // Modal SOS
+    const sosModal = document.getElementById('sos-modal');
+    const btnSos = document.getElementById('btn-sos');
+    
+    // Função para abrir modal
     const openModal = (modal) => {
       if (modal) {
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        trackEvent('Modal', modal.id);
       }
     };
     
+    // Função para fechar modal
     const closeAllModals = () => {
       document.querySelectorAll('.modal').forEach(modal => {
         modal.style.display = 'none';
       });
       document.body.style.overflow = '';
     };
+    
+    // Event listeners para abrir modais
+    if (btnDenuncia && denunciaModal) {
+      btnDenuncia.addEventListener('click', () => openModal(denunciaModal));
+    }
+    
+    if (btnDenunciaHeader && denunciaModal) {
+      btnDenunciaHeader.addEventListener('click', () => openModal(denunciaModal));
+    }
     
     if (btnInfo && infoModal) {
       btnInfo.addEventListener('click', () => openModal(infoModal));
@@ -328,10 +407,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btnSos.addEventListener('click', () => openModal(sosModal));
     }
     
+    // Event listeners para fechar modais
     closeModal.forEach(btn => {
       btn.addEventListener('click', closeAllModals);
     });
     
+    // Fechar ao clicar fora do modal
     window.addEventListener('click', (e) => {
       if (e.target.classList.contains('modal')) {
         closeAllModals();
@@ -342,51 +423,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCallHelp = document.getElementById('btn-call-help');
     if (btnCallHelp) {
       btnCallHelp.addEventListener('click', () => {
+        trackEvent('Emergency', 'CallAttempt');
         window.open('tel:100');
       });
     }
   };
   setupModals();
 
-  // ===========
-  // Dark Mode
-  // ===========
-  const setupDarkMode = () => {
-    const btnDarkMode = document.getElementById('btn-dark-mode');
-    if (!btnDarkMode) return;
-
-    const darkModeIcon = btnDarkMode.querySelector('i');
-    let darkMode = localStorage.getItem('darkMode') === 'enabled';
-
-    const enableDarkMode = () => {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('darkMode', 'enabled');
-      darkModeIcon?.classList.replace('fa-moon', 'fa-sun');
-      btnDarkMode.textContent = ' Modo Claro';
-      if (darkModeIcon) btnDarkMode.prepend(darkModeIcon);
-    };
-
-    const disableDarkMode = () => {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('darkMode', 'disabled');
-      darkModeIcon?.classList.replace('fa-sun', 'fa-moon');
-      btnDarkMode.textContent = ' Modo Escuro';
-      if (darkModeIcon) btnDarkMode.prepend(darkModeIcon);
-    };
-
-    if (darkMode) enableDarkMode();
-
-    btnDarkMode.addEventListener('click', () => {
-      darkMode = !darkMode;
-      darkMode ? enableDarkMode() : disableDarkMode();
-    });
-  };
-  setupDarkMode();
-
   // =====================
   // Funções Utilitárias
   // =====================
-  function showToast(message, type = 'success') {
+
+  // Mostrar toast
+  const showToast = (message, type = 'success') => {
     const toast = document.getElementById('toast');
     if (!toast) return;
     
@@ -397,48 +446,35 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       toast.classList.remove('show');
     }, 3000);
-  }
+  };
 
-  // Botão Saber Mais
+  // Botão Saber Mais (Estatísticas)
   const btnSaberMais = document.getElementById('btn-saber-mais');
   if (btnSaberMais) {
     btnSaberMais.addEventListener('click', () => {
       showToast('Em breve mais informações estatísticas estarão disponíveis!', 'info');
+      trackEvent('Stats', 'MoreInfo');
     });
   }
 
-  // Atualiza ano do copyright
-  const copyrightElement = document.querySelector('.copyright');
+  // Rastreamento de eventos (simplificado)
+  function trackEvent(category, action, label = '') {
+    console.log(`Evento: ${category} - ${action} ${label ? '- ' + label : ''}`);
+    // Aqui você pode adicionar integração com Google Analytics, Facebook Pixel, etc.
+  }
+
+  // Verifica se há mensagem de URL (para compartilhamento)
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedMessage = urlParams.get('m');
+  if (sharedMessage) {
+    showToast(decodeURIComponent(sharedMessage), 'info');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Atualiza dinamicamente o ano do copyright
+  const copyrightElement = document.querySelector('.top-bar-copyright p');
   if (copyrightElement) {
-    copyrightElement.textContent = `© ${new Date().getFullYear()} Basta Bullying`;
-  }
-
-  // =====================
-  // WebView Fixes
-  // =====================
-  function isWebView() {
-    const userAgent = navigator.userAgent.toLowerCase();
-    return (userAgent.includes('wv') || 
-            userAgent.includes('webview') || 
-            /(android|iphone|ipad).*version\/[\d.]+.*chrome\/[^\s]+ mobile/i.test(navigator.userAgent));
-  }
-
-  if (isWebView()) {
-    // Adiciona feedback tátil para todos os botões
-    document.querySelectorAll('.btn').forEach(btn => {
-      btn.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.95)';
-      });
-      
-      btn.addEventListener('touchend', function() {
-        this.style.transform = '';
-      });
-    });
-
-    // Previne zoom com toque duplo
-    document.addEventListener('dblclick', function(e) {
-      e.preventDefault();
-    }, { passive: false });
+    copyrightElement.textContent = copyrightElement.textContent.replace('2025', new Date().getFullYear());
   }
 
   // =====================
@@ -453,25 +489,27 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-
-  // Torna a função de mensagens disponível globalmente para onclick
-  window.showRandomMessage = showRandomMessage;
 });
 
-// Função global para compartilhamento
-function shareMotivationalMessage() {
-  const msg = document.getElementById('mensagem-apoio')?.textContent || "Você é mais forte do que imagina. Acredite em si mesmo!";
-  
+// =====================
+// Funções Globais
+// =====================
+
+// Compartilhar mensagem motivacional
+function shareMotivationalMessage(message) {
   if (navigator.share) {
     navigator.share({
       title: 'Basta Bullying',
-      text: msg,
-      url: window.location.href
+      text: message,
+      url: window.location.href.split('?')[0] + '?m=' + encodeURIComponent(message)
+    }).then(() => {
+      console.log('Compartilhado com sucesso');
     }).catch(err => {
       console.log('Erro ao compartilhar:', err);
     });
   } else {
     // Fallback para navegadores sem Web Share API
-    prompt('Copie esta mensagem para compartilhar:', msg);
+    const shareUrl = window.location.href.split('?')[0] + '?m=' + encodeURIComponent(message);
+    prompt('Copie esta mensagem para compartilhar:', `${message}\n\n${shareUrl}`);
   }
 }
